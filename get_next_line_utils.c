@@ -25,7 +25,7 @@ static char	*ft_strcat(char *dst, const char *src)
 	return (dst);
 }
 
-static size_t	ft_strlen(const char *s)
+size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
@@ -69,11 +69,8 @@ char	*ft_strchr(const char *s, int c)
 	if (!s)
 		return ((char *)s);
 	ch = (char)c;
-	while (*s)
-	{
-		if (*s++ == ch)
-			return ((char *)--s);
-	}
+	while (*s && *s != ch)
+		s++;
 	if (*s == ch)
 		return ((char *)s);
 	return (NULL);
