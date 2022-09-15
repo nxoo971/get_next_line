@@ -15,9 +15,7 @@
 
 # include <unistd.h>
 # include <fcntl.h>
-# include <stdio.h>
 # include <stdlib.h>
-# include <string.h>
 
 char		*get_next_line(int fd);
 const char	*ft_strchr(const char *s, int c);
