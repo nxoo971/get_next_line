@@ -56,7 +56,7 @@ char	*newline_exist(char **line, int lastline)
 		free(*line);
 		*line = NULL;
 	}
-	return (tmp); 
+	return (tmp);
 }
 
 char	*get_next_line(int fd)
