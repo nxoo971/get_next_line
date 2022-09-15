@@ -31,11 +31,37 @@ static char	*ft_strndup(const char *s1, int len)
 	return (res);
 }
 
+char	*newline_exist(char **line, int lastline)
+{
+	const char	*endl;
+	char		*res;
+	char		*tmp;
+
+	if (!*line)
+		return (*line);
+	tmp = NULL;
+	endl = ft_strchr(*line, '\n');
+	if (endl && !lastline)
+	{
+		tmp = ft_strndup(endl + 1, -1);
+		res = ft_strndup(*line, (endl - *line) + 1);
+		free(*line);
+		*line = tmp;
+		return (res);
+	}
+	if (lastline && **line && !endl)
+		tmp = ft_strndup(*line, -1);
+	if (tmp || (*line && !**line))
+	{
+		free(*line);
+		*line = NULL;
+	}
+	return (tmp); 
+}
+
 char	*get_next_line(int fd)
 {
 	static char	*line;
-	char		*endl;
-	char		*tmp;
 	char		*res;
 	char		buff[BUFFER_SIZE + 1];
 	int			ret;
@@ -50,40 +76,9 @@ char	*get_next_line(int fd)
 			return (NULL);
 		buff[ret] = 0;
 		ft_strjoin(&line, buff, ret);
-		endl = ft_strchr(line, '\n');
-		if (endl)
-		{
-			res = ft_strndup(line, (endl - line) + 1);
-			tmp = ft_strndup(endl + 1, -1);
-			free(line);
-			line = tmp;
+		res = newline_exist(&line, 0);
+		if (res)
 			return (res);
-		}
 	}
-	if (!line)
-		return (line);
-	if (line && !*line)
-	{
-		free(line);
-		line = NULL;
-		return (line);
-	}
-	endl = ft_strchr(line, '\n');
-	if (!endl)
-		tmp = ft_strndup(line, -1);
-	else
-		tmp = ft_strndup(endl + 1, -1);
-	free(line);
-	line = NULL;
-	return (tmp);
+	return (newline_exist(&line, 1));
 }
-/*
-int		main(int ac, char **av)
-{
-	(void)ac;
-	char *res;
-	int fd = open(av[1], O_RDONLY);
-	while ((res = get_next_line(fd)))
-		printf("%s", res);
-	return (0);
-}*/

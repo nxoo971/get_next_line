@@ -10,7 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+size_t	ft_strlen(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
 
 static char	*ft_strcat(char *dst, const char *src)
 {
@@ -23,16 +31,6 @@ static char	*ft_strcat(char *dst, const char *src)
 		*start++ = *src++;
 	*start = 0;
 	return (dst);
-}
-
-size_t	ft_strlen(const char *s)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
 }
 
 void	ft_strjoin(char **line, const char *s1, int bufsize)
@@ -62,16 +60,14 @@ void	ft_strjoin(char **line, const char *s1, int bufsize)
 	}
 }
 
-char	*ft_strchr(const char *s, int c)
+const char	*ft_strchr(const char *s, int c)
 {
 	char	ch;
 
-	if (!s)
-		return ((char *)s);
 	ch = (char)c;
 	while (*s && *s != ch)
 		s++;
 	if (*s == ch)
-		return ((char *)s);
+		return (s);
 	return (NULL);
 }
