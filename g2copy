@@ -1,0 +1,144 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ooxn <marvin@42.fr>                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/15 23:23:00 by ooxn              #+#    #+#             */
+/*   Updated: 2022/09/15 23:23:02 by ooxn             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "get_next_line_bonus.h"
+
+static char	*ft_strndup(const char *s1, int len)
+{
+	char	*res;
+	int		size;
+	int		i;
+
+	size = len;
+	if (size == -1)
+		size = ft_strlen(s1);
+	res = malloc(size + 1);
+	if (!res)
+		return (res);
+	i = -1;
+	while (s1[++i] && i < size)
+		res[i] = s1[i];
+	res[i] = 0;
+	return (res);
+}
+
+char	*newline_exist(t_line **lst, int lastline)
+{
+	const char	*endl;
+	char		*line;
+	char		*res;
+	char		*tmp;
+
+	line = (*lst)->line;
+	if (!line)
+		return (line);
+	tmp = NULL;
+	endl = ft_strchr(line, '\n');
+	if (endl && !lastline)
+	{
+		tmp = ft_strndup(endl + 1, -1);
+		res = ft_strndup(line, (endl - line) + 1);
+		free(line);
+		line = tmp;
+		return (res);
+	}
+	if (lastline && *line && !endl)
+		tmp = ft_strndup(line, -1);
+	if (tmp || (line && !*line))
+	{
+		free(line);
+		free(*lst);
+		line = NULL;
+	}
+	return (tmp);
+}
+
+t_line	*create_elem(int fd)
+{
+	t_line	*line;
+
+	line = malloc(sizeof(t_line));
+	if (line)
+	{
+		line->fd = fd;
+		line->next = NULL;
+	}
+	return (line);
+}
+
+t_line	*check_fd(t_line *line, int fd)
+{
+	t_line	*lst;
+
+	lst = line;
+	if (!lst)
+		return (create_elem(fd));
+	while (lst && lst->fd != fd)
+		lst = lst->next;
+	if (!lst)
+		lst = create_elem(fd);
+	return (lst);
+}
+#include <stdio.h>
+char	*get_next_line(int fd)
+{
+	static t_line	*line;
+	t_line		*lst;
+	char		*res;
+	char		buff[BUFFER_SIZE + 1];
+	int			ret;
+
+	if (fd < 3 && fd != 0)
+		return (NULL);
+	lst = check_fd(line, fd);
+	if (lst)
+		printf("%s\n", lst->line);
+	if (!lst)
+		return (NULL);
+	ret = 1;
+	while (ret)
+	{
+		ret = read(fd, buff, BUFFER_SIZE);
+		if (ret < 0)
+			return (NULL);
+		buff[ret] = 0;
+		ft_strjoin(&(lst->line), buff, ret);
+		res = newline_exist(&lst, 0);
+		if (res)
+			return (res);
+	}
+	return (newline_exist(&lst, 1));
+}
+
+int		main(int ac, char **av)
+{
+	(void)ac;
+	char	*res;
+	int		fd = open(av[1], O_RDONLY);
+
+	while ((res = get_next_line(fd)))
+		;
+	/*int		fd2 = open(av[2], O_RDONLY);
+
+	res = get_next_line(fd);
+	printf("1: %s", res);
+	res = get_next_line(fd2);
+	printf("2: %s", res);
+	res = get_next_line(fd);
+	printf("3: %s", res);
+	res = get_next_line(fd2);
+	printf("4: %s", res);
+
+	close(fd);
+	close(fd2);*/
+	return (0);
+}
