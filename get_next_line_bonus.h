@@ -20,7 +20,7 @@
 
 typedef struct s_line
 {
-	static char			*line;
+	char			*line;
 	int				fd;
 	struct s_line	*next;
 }	t_line;
@@ -29,5 +29,6 @@ char		*get_next_line(int fd);
 const char	*ft_strchr(const char *s, int c);
 void		ft_strjoin(char **line, const char *s1, int bufsize);
 size_t		ft_strlen(const char *s);
+void		freetab(char **tab);
 
 #endif
