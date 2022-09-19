@@ -22,6 +22,7 @@ void	freetab(char **tab)
 	while (tab[i])
 		free(tab[i++]);
 	free(tab);
+	tab = NULL;
 }
 
 size_t	ft_strlen(const char *s)
@@ -85,3 +86,29 @@ const char	*ft_strchr(const char *s, int c)
 		return (s);
 	return (NULL);
 }
+/*
+char	**is_lastline(char **tline, int fd)
+{
+	char	**res;
+	char	buff[BUFFER_SIZE + 1];
+	int		buffsize;
+	int		pos;
+
+	pos = fd - 2;
+	if (fd == 0)
+		pos = 0;
+	if (tline[pos])
+	{
+		if (tline[pos][0])
+			return (tline);
+		readfile(buff, fd, &buffsize);
+		if (buffsize <= 0)
+			freetab(tline);
+		else
+			ft_strjoin(&tline[pos], buff, buffsize);
+		return (tline);
+	}
+	res = arraydup(tline);
+	freetab(tline);
+	return (res);
+}*/

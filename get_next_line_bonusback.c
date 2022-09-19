@@ -12,6 +12,42 @@
 
 #include "get_next_line_bonus.h"
 
+static char	*ft_strdup(const char *s1)
+{
+	char	*res;
+	int		size;
+	int		i;
+
+	size = ft_strlen(s1);
+	res = malloc(size + 1);
+	if (!res)
+		return (res);
+	i = -1;
+	while (s1[++i] && i < size)
+		res[i] = s1[i];
+	res[i] = 0;
+	return (res);
+}
+
+static char	*ft_strndup(const char *s1, int len)
+{
+	char	*res;
+	int		size;
+	int		i;
+
+	size = len;
+	if (size == -1)
+		size = ft_strlen(s1);
+	res = malloc(size + 1);
+	if (!res)
+		return (res);
+	i = -1;
+	while (s1[++i] && i < size)
+		res[i] = s1[i];
+	res[i] = 0;
+	return (res);
+}
+
 char	*newline_exist(char **line, int lastline)
 {
 	const char	*endl;
@@ -21,17 +57,17 @@ char	*newline_exist(char **line, int lastline)
 	if (!*line)
 		return (*line);
 	tmp = NULL;
-	endl = strchr(*line, '\n');
+	endl = ft_strchr(*line, '\n');
 	if (endl && !lastline)
 	{
-		tmp = strdup(endl + 1);
-		res = strndup(*line, (endl - *line) + 1);
+		tmp = ft_strndup(endl + 1, -1);
+		res = ft_strndup(*line, (endl - *line) + 1);
 		free(*line);
 		*line = tmp;
 		return (res);
 	}
 	if (lastline && **line && !endl)
-		tmp = strdup(*line);
+		tmp = ft_strndup(*line, -1);
 	if (tmp || (*line && !**line))
 	{
 		free(*line);
@@ -59,52 +95,32 @@ char	**arraydup(char **src)
 	dst[--i] = malloc(1);
 	dst[i][0] = '\0';
 	while (--i >= 0)
-		dst[i] = strdup(src[i]);
+		dst[i] = ft_strdup(src[i]);
 	return (dst);
 }
 
-char	*readfile(char *buff, int fd, int *size)
+void	freetab2(char **tab, int pos)
 {
-	*size = read(fd, buff, BUFFER_SIZE);
-	if (*size < 0)
-		return (buff);
-	buff[*size] = 0;
-	return (buff);
-}
+	if (!tab)
+		return ;
+	int	i;
 
-char	**is_lastline(char **tline, int fd)
-{
-	char	**res;
-	char	buff[BUFFER_SIZE + 1];
-	int		buffsize;
-	int		pos;
-
-	pos = fd - 2;
-	if (fd == 0)
-		pos = 0;
-	if (tline[pos])
+	i = 0;
+	while (i < pos)
 	{
-		if (tline[pos][0])
-			return (tline);
-		readfile(buff, fd, &buffsize);
-		if (buffsize <= 0)
-		{
-			freetab(tline);
-			return (NULL);
-		}
-		ft_strjoin(tline + pos, buff, buffsize);
-		return (tline);
+		if (tab[i])
+			free(tab[i]);
+		i++;
 	}
-	res = arraydup(tline);
-	freetab(tline);
-	return (res);
+	free(tab);
 }
 
 char	**check_line_by_fd(char	**tline, int fd)
 {
 	char	**res;
 	int		size;
-	int		bufsize;
+	int		i;
+	int		ret;
 
 	if (!tline)
 	{
@@ -114,34 +130,59 @@ char	**check_line_by_fd(char	**tline, int fd)
 		tline = malloc(sizeof(char *) * size);
 		if (tline)
 		{
-			tline[size] = 0;
-			while (--size >= 0)
+			i = 0;
+			while (i < (size - 1))
 			{
-				tline[size] = malloc(1);
-				tline[size][0] = '\0';
+				tline[i] = malloc(1);
+				tline[i][0] = '\0';
+				i++;
 			}
+			tline[i] = 0;
 		}
 		return (tline);
 	}
-	return (is_lastline(tline, fd));
+	int pos = fd - 2;
+	if (fd == 0)
+		pos = 0;
+	if (tline[pos])
+	{
+		if (tline[pos][0])
+			return (tline);
+		char buff[BUFFER_SIZE + 1];
+		ret = read(fd, buff, BUFFER_SIZE);
+		if (ret <= 0)
+		{
+			freetab(tline);
+			return (NULL);
+		}
+		buff[ret] = 0;
+		ft_strjoin(&tline[pos], buff, ret);
+		return (tline);
+	}
+	res = arraydup(tline);
+	freetab(tline);
+	return (res);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	**tline;
-	char		**line;
 	char		*res;
 	char		buff[BUFFER_SIZE + 1];
 	int			ret;
 
 	if (fd < 3 && fd != 0)
+	{
+		//freetab(tline);
 		return (NULL);
+	}
+	int pos = fd - 2;
+	if (fd == 0)
+		pos = 0;
+	ret = 1;
 	tline = check_line_by_fd(tline, fd);
 	if (!tline)
 		return (NULL);
-	line = tline + fd - 2;
-	if (fd == 0)
-		line = tline + fd;
 	ret = 1;
 	while (ret)
 	{
@@ -149,14 +190,14 @@ char	*get_next_line(int fd)
 		if (ret < 0)
 			return (NULL);
 		buff[ret] = 0;
-		ft_strjoin(line, buff, ret);
-		res = newline_exist(line, 0);
+		ft_strjoin(tline + pos, buff, ret);
+		res = newline_exist(tline + pos, 0);
 		if (res)
 			return (res);
 	}
-	return (newline_exist(line, 1));
+	return (newline_exist(tline + pos, 1));
 }
-/*
+
 int		main(int ac, char **av)
 {
 	(void)ac;
@@ -197,4 +238,3 @@ int		main(int ac, char **av)
 	close(fd2);
 	return (0);
 }
-*/
