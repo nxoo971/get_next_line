@@ -63,12 +63,12 @@ char	**arraydup(char **src)
 	return (dst);
 }
 
-char	*readfile(char *buff, int fd, int *size)
+char	*readfile(int fd, char *buff, int *byteread)
 {
-	*size = read(fd, buff, BUFFER_SIZE);
-	if (*size < 0)
+	*byteread = read(fd, buff, BUFFER_SIZE);
+	if (*byteread < 0)
 		return (buff);
-	buff[*size] = 0;
+	buff[*byteread] = 0;
 	return (buff);
 }
 
@@ -76,7 +76,7 @@ char	**is_lastline(char **tline, int fd)
 {
 	char	**res;
 	char	buff[BUFFER_SIZE + 1];
-	int		buffsize;
+	int		byteread;
 	int		pos;
 
 	pos = fd - 2;
@@ -86,13 +86,10 @@ char	**is_lastline(char **tline, int fd)
 	{
 		if (tline[pos][0])
 			return (tline);
-		readfile(buff, fd, &buffsize);
-		if (buffsize <= 0)
-		{
-			freetab(tline);
-			return (NULL);
-		}
-		ft_strjoin(tline + pos, buff, buffsize);
+		readfile(fd, buff, &byteread);
+		if (byteread <= 0)
+			return (freetab(tline));
+		ft_strjoin(tline + pos, buff, byteread);
 		return (tline);
 	}
 	res = arraydup(tline);
@@ -104,7 +101,6 @@ char	**check_line_by_fd(char	**tline, int fd)
 {
 	char	**res;
 	int		size;
-	int		bufsize;
 
 	if (!tline)
 	{
@@ -132,7 +128,7 @@ char	*get_next_line(int fd)
 	char		**line;
 	char		*res;
 	char		buff[BUFFER_SIZE + 1];
-	int			ret;
+	int			byteread;
 
 	if (fd < 3 && fd != 0)
 		return (NULL);
@@ -142,21 +138,20 @@ char	*get_next_line(int fd)
 	line = tline + fd - 2;
 	if (fd == 0)
 		line = tline + fd;
-	ret = 1;
-	while (ret)
+	byteread = 1;
+	while (byteread)
 	{
-		ret = read(fd, buff, BUFFER_SIZE);
-		if (ret < 0)
+		readfile(fd, buff, &byteread);
+		if (byteread < 0)
 			return (NULL);
-		buff[ret] = 0;
-		ft_strjoin(line, buff, ret);
+		ft_strjoin(line, buff, byteread);
 		res = newline_exist(line, 0);
 		if (res)
 			return (res);
 	}
 	return (newline_exist(line, 1));
 }
-/*
+
 int		main(int ac, char **av)
 {
 	(void)ac;
@@ -197,4 +192,3 @@ int		main(int ac, char **av)
 	close(fd2);
 	return (0);
 }
-*/
