@@ -14,6 +14,8 @@
 
 void	freetab(char **tab)
 {
+	if (!tab)
+		return ;
 	int	i;
 
 	i = 0;
