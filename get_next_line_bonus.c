@@ -2,9 +2,18 @@
 
 void	*freetab(char **buffer, int current)
 {
+	if (!buffer)
+		return (buffer);
 	int		count;
 	int		i;
 
+	if (buffer[current])
+	{
+		free(buffer[current]);
+		buffer[current] = NULL;
+		buffer[current] = malloc(1);
+		buffer[current][0] = 0;
+	}
 	i = 0;
 	count = 0;
 	while (buffer[i])
@@ -15,17 +24,15 @@ void	*freetab(char **buffer, int current)
 	}
 	if (count == 0)
 	{
-		i = -1;
-		while (buffer[++i])
+		i = 0;
+		while (buffer[i])
+		{
 			free(buffer[i]);
+			buffer[i] = NULL;
+			i++;
+		}
 		free(buffer);
 		buffer = NULL;
-	}
-	else
-	{
-		free(buffer[current]);
-		buffer[current] = malloc(1);
-		buffer[current][0] = 0;
 	}
 	return (buffer);
 }
@@ -113,20 +120,33 @@ char	*get_next_line(int fd)
 	int			pos;
 
 	if (fd < 3 && fd != 0)
-		return (freetab(buffer, 0));
+	{
+		buffer = freetab(buffer, fd == 0 ? fd : fd - 2);
+		return (NULL);
+	}
 	buffer = get_line_by_fd(fd, buffer);
 	pos = (fd == 0 ? fd : fd - 2);
 	if (!buffer || !buffer[pos])
 		return (NULL);
+	if (!buffer[pos][0])
+	{
+		free(buffer[pos]);
+		buffer[pos] = NULL;
+	}
 	if (!readuntil(fd, buffer + pos))
 		return (NULL);
+	if (!buffer[pos])
+	{
+		buffer = freetab(buffer, pos);
+		return (NULL);
+	}
 	endl = strchr(buffer[pos], '\n');
 	if (!endl)
 	{
 		tmp = NULL;
 		if (buffer[pos][0])
 			tmp = strdup(buffer[pos]);
-		freetab(buffer, pos);
+		buffer = freetab(buffer, pos);
 		return (tmp);
 	}
 	temp = strndup(buffer[pos], endl - buffer[pos] + 1);
