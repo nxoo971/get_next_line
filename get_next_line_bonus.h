@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ooxn <marvin@42.fr>                        +#+  +:+       +#+        */
+/*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:09 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/15 23:23:10 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/21 17:03:46 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,10 @@
 # include <stdio.h>
 # include <string.h>
 
-typedef struct s_line
-{
-	char			*line;
-	int				fd;
-	struct s_line	*next;
-}	t_line;
-
 char		*get_next_line(int fd);
 const char	*ft_strchr(const char *s, int c);
 void		ft_strjoin(char **line, const char *s1, int bufsize);
 size_t		ft_strlen(const char *s);
-void		*freetab(char **tab);
+void		*freetab(char **buffer, int current);
 
 #endif

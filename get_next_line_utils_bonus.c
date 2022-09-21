@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ooxn <marvin@42.fr>                        +#+  +:+       +#+        */
+/*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:20 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/15 23:23:22 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/21 16:58:32 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-
+/*
 void	*freetab(char **tab)
 {
 	if (!tab)
@@ -23,7 +23,7 @@ void	*freetab(char **tab)
 		free(tab[i++]);
 	free(tab);
 	return (NULL);
-}
+}*/
 
 size_t	ft_strlen(const char *s)
 {
@@ -48,15 +48,15 @@ static char	*ft_strcat(char *dst, const char *src)
 	return (dst);
 }
 
-void	ft_strjoin(char **line, const char *s1, int bufsize)
+void	ft_strjoin(char **line, const char *s1, int size)
 {
 	char	*res;
 
-	if (bufsize <= 0)
+	if (size <= 0)
 		return ;
-	if (*line)
+	if (*line && **line)
 	{
-		res = malloc(bufsize + ft_strlen(*line) + 1);
+		res = malloc(size + ft_strlen(*line) + 1);
 		if (res)
 		{
 			*res = 0;
@@ -67,7 +67,7 @@ void	ft_strjoin(char **line, const char *s1, int bufsize)
 		}
 		return ;
 	}
-	*line = malloc(bufsize + 1);
+	*line = malloc(size + 1);
 	if (*line)
 	{
 		**line = 0;

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ooxn <marvin@42.fr>                        +#+  +:+       +#+        */
+/*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 20:10:44 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/14 20:10:48 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/20 20:41:12 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,45 +196,4 @@ char	*get_next_line(int fd)
 			return (res);
 	}
 	return (newline_exist(tline + pos, 1));
-}
-
-int		main(int ac, char **av)
-{
-	(void)ac;
-	char	*res;
-	int		fd = open(av[1], O_RDONLY);
-	int		fd2 = open(av[2], O_RDONLY);
-
-	// while ((res = get_next_line(fd)))
-	// 	printf("%s", res);
-	// printf("%s", res);
-	res = get_next_line(fd);
-	printf("1: %s", res);
-	res = get_next_line(fd2);
-	printf("2: %s", res);
-	res = get_next_line(fd);
-	printf("3: %s", res);
-	res = get_next_line(fd2);
-	printf("4: %s", res);
-	res = get_next_line(fd);
-	printf("5: %s", res);
-	res = get_next_line(fd2);
-	printf("6: %s", res);
-	res = get_next_line(fd);
-	printf("7: %s", res);
-	res = get_next_line(fd2);
-	printf("8: %s", res);
-
-	res = get_next_line(fd);
-	printf("9: %s", res);
-	res = get_next_line(fd2);
-	printf("10: %s", res);
-	res = get_next_line(fd);
-	printf("11: %s", res);
-	res = get_next_line(fd2);
-	printf("12: %s", res);
-
-	close(fd);
-	close(fd2);
-	return (0);
 }
