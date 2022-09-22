@@ -96,8 +96,16 @@ char	**get_line_by_fd(int fd, char **buffer)
 	}
 	if (buffer[fd == 0 ? fd : fd - 2])
 		return (buffer);
-	res = arraydup(buffer, fd == 0 ? fd : fd - 2);
-	freetab(buffer, 0);
+	res = arraydup(buffer, fd);
+	int i = 0;
+			while (buffer[i])
+			{
+				free(buffer[i]);
+				buffer[i] = NULL;
+				i++;
+			}
+			free(buffer);
+			buffer = NULL;
 	return (res);
 }
 
@@ -132,15 +140,18 @@ char	*get_next_line(int fd)
 
 	if (fd < 3 && fd != 0)
 	{
-		int i = 0;
-		while (buffer[i])
+		if (buffer)
 		{
-			free(buffer[i]);
-			buffer[i] = NULL;
-			i++;
+			int i = 0;
+			while (buffer[i])
+			{
+				free(buffer[i]);
+				buffer[i] = NULL;
+				i++;
+			}
+			free(buffer);
+			buffer = NULL;
 		}
-		free(buffer);
-		buffer = NULL;
 		return (NULL);
 	}
 	buffer = get_line_by_fd(fd, buffer);
@@ -157,7 +168,7 @@ char	*get_next_line(int fd)
 	}
 	if (!readuntil(fd, buffer + pos))
 	{
-		//buffer = freetab(buffer, pos);
+		buffer = freetab(buffer, pos);
 		return (NULL);
 	}
 	if (!buffer[pos])
