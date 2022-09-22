@@ -7,7 +7,7 @@ void	*freetab(char **buffer, int current)
 	int		count;
 	int		i;
 
-	if (buffer[current])
+	if (current >= 0 && buffer[current])
 	{
 		free(buffer[current]);
 		buffer[current] = NULL;
@@ -37,7 +37,7 @@ void	*freetab(char **buffer, int current)
 	return (buffer);
 }
 
-char	**arraydup(char **src)
+char	**arraydup(char **src, int msize)
 {
 	char	**dst;
 	int		i;
@@ -47,6 +47,8 @@ char	**arraydup(char **src)
 	i = 0;
 	while (src[i])
 		i++;
+	while (i < msize)
+		i++;
 	i++;
 	dst = malloc(sizeof(char *) * (i + 1));
 	if (!dst)
@@ -54,8 +56,17 @@ char	**arraydup(char **src)
 	dst[i] = 0;
 	dst[--i] = malloc(1);
 	dst[i][0] = '\0';
-	while (--i >= 0)
+	i = 0;
+	while (src[i])
+	{
 		dst[i] = strdup(src[i]);
+		i++;
+	}
+	while (i < msize - 1)
+	{
+		dst[i] = strdup("");
+		i++;
+	}
 	return (dst);
 }
 
@@ -77,7 +88,7 @@ char	**get_line_by_fd(int fd, char **buffer)
 			{
 				buffer[size] = malloc(1);
 				if (!buffer[size])
-					return (freetab(buffer, 0));
+					return (freetab(buffer, size));
 				buffer[size][0] = '\0';
 			}
 		}
@@ -85,7 +96,7 @@ char	**get_line_by_fd(int fd, char **buffer)
 	}
 	if (buffer[fd == 0 ? fd : fd - 2])
 		return (buffer);
-	res = arraydup(buffer);
+	res = arraydup(buffer, fd == 0 ? fd : fd - 2);
 	freetab(buffer, 0);
 	return (res);
 }
@@ -121,22 +132,38 @@ char	*get_next_line(int fd)
 
 	if (fd < 3 && fd != 0)
 	{
-		buffer = freetab(buffer, fd == 0 ? fd : fd - 2);
+		int i = 0;
+		while (buffer[i])
+		{
+			free(buffer[i]);
+			buffer[i] = NULL;
+			i++;
+		}
+		free(buffer);
+		buffer = NULL;
 		return (NULL);
 	}
 	buffer = get_line_by_fd(fd, buffer);
 	pos = (fd == 0 ? fd : fd - 2);
 	if (!buffer || !buffer[pos])
-		return (NULL);
-	if (!buffer[pos][0])
 	{
-		free(buffer[pos]);
+		buffer = freetab(buffer, pos);
+		return (NULL);
+	}
+	if (!buffer[pos][0]) // pour strjoin dans readuntil
+	{
+		free(buffer[pos]); // free le malloc(1)
 		buffer[pos] = NULL;
 	}
 	if (!readuntil(fd, buffer + pos))
+	{
+		//buffer = freetab(buffer, pos);
 		return (NULL);
+	}
 	if (!buffer[pos])
 	{
+		buffer[pos] = malloc(1);
+		buffer[pos][0] = 0;
 		buffer = freetab(buffer, pos);
 		return (NULL);
 	}
