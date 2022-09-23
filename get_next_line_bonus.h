@@ -6,7 +6,7 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:09 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/21 17:03:46 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/23 20:05:07 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ char		*get_next_line(int fd);
 const char	*ft_strchr(const char *s, int c);
 void		ft_strjoin(char **line, const char *s1, int bufsize);
 size_t		ft_strlen(const char *s);
-void		*freetab(char **buffer, int current);
+void	    ft_free(char **ptr);
+void	    ft_freetab(char **ptr, int msize);
 
 #endif

@@ -6,24 +6,11 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:20 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/22 01:19:07 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/24 00:43:55 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-/*
-void	*freetab(char **tab)
-{
-	if (!tab)
-		return (tab);
-	int	i;
-
-	i = 0;
-	while (tab[i])
-		free(tab[i++]);
-	free(tab);
-	return (NULL);
-}*/
 
 size_t	ft_strlen(const char *s)
 {
@@ -62,11 +49,13 @@ void	ft_strjoin(char **line, const char *s1, int size)
 			*res = 0;
 			ft_strcat(res, *line);
 			ft_strcat(res, s1);
-			free(*line);
+			ft_free(line);
 			*line = res;
 		}
 		return ;
 	}
+	if (*line && !**line)
+		ft_free(line);
 	*line = malloc(size + 1);
 	if (*line)
 	{
@@ -86,29 +75,3 @@ const char	*ft_strchr(const char *s, int c)
 		return (s);
 	return (NULL);
 }
-/*
-char	**is_lastline(char **tline, int fd)
-{
-	char	**res;
-	char	buff[BUFFER_SIZE + 1];
-	int		buffsize;
-	int		pos;
-
-	pos = fd - 2;
-	if (fd == 0)
-		pos = 0;
-	if (tline[pos])
-	{
-		if (tline[pos][0])
-			return (tline);
-		readfile(buff, fd, &buffsize);
-		if (buffsize <= 0)
-			freetab(tline);
-		else
-			ft_strjoin(&tline[pos], buff, buffsize);
-		return (tline);
-	}
-	res = arraydup(tline);
-	freetab(tline);
-	return (res);
-}*/

@@ -1,4 +1,4 @@
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -24,15 +24,6 @@ void	gnl(int fd, char *data)
 	}
 }
 
-void	ft_free(char **ptr)
-{
-	if (*ptr)
-	{
-		free(*ptr);
-		*ptr = NULL;
-	}
-}
-
 int		main(int ac, char **av)
 {
 	(void)ac;
@@ -44,6 +35,37 @@ int		main(int ac, char **av)
 	printf("%s", res);
 	if (res)
 		ft_free(&res);
+
+	res = get_next_line(fd2);
+	printf("%s", res);
+	if (res)
+		ft_free(&res);
+
+	res = get_next_line(fd);
+	printf("%s", res);
+	if (res)
+		ft_free(&res);
+
+	res = get_next_line(fd2);
+	printf("%s", res);
+	if (res)
+		ft_free(&res);
+
+	res = get_next_line(fd);
+	printf("%s", res);
+	if (res)
+		ft_free(&res);
+
+	res = get_next_line(fd2);
+	printf("%s", res);
+	if (res)
+		ft_free(&res);
+
+	res = get_next_line(fd);
+	printf("%s", res);
+	if (res)
+		ft_free(&res);
+
 	res = get_next_line(fd2);
 	printf("%s", res);
 	if (res)

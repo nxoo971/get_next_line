@@ -8,14 +8,15 @@ void	gnl(int fd, char *data)
 	char *res = get_next_line(fd);
 	if (!res && !data)
 	{
-		printf("%d - GOOD [%s|%s]\n", indexA, res, data);
+		//printf("%d - GOOD [%s|%s]\n", indexA, res, data);
+		printf("%d - GOOD\n", indexA);
 		++indexA;
 		return ;
 	}
 	if (strcmp(res, data) == 0)
-		printf("%d - GOOD [%s|%s]\n", indexA, res, data);
+		printf("%d - GOOD\n", indexA);
 	else
-		printf("%d - KO [%s|%s]\n", indexA, res, data);
+		printf("%d - KO\n", indexA);
 	++indexA;
 	if (res)
 	{
@@ -27,46 +28,46 @@ void	gnl(int fd, char *data)
 int		main(int ac, char **av)
 {
 	(void)ac;
-	char	*res;
-	int		fd = open(av[1], O_RDONLY);
+	(void)av;
+	int		fd[4];// = open(av[1], O_RDONLY);
 
-	// fd[0] = open("gnlTester/files/41_with_nl", O_RDWR);
-	// /* 1 */ gnl(1000, NULL);
-	// /* 2 */ gnl(fd[0], "0123456789012345678901234567890123456789\n");
+	fd[0] = open("gnlTester/files/41_with_nl", O_RDWR);
+	/* 1 */ gnl(1000, NULL);
+	/* 2 */ gnl(fd[0], "0123456789012345678901234567890123456789\n");
 
-	// fd[1] = open("gnlTester/files/42_with_nl", O_RDWR);
-	// /* 3 */ gnl(1001, NULL);
-	// /* 4 */ gnl(fd[1], "01234567890123456789012345678901234567890\n");
+	fd[1] = open("gnlTester/files/42_with_nl", O_RDWR);
+	/* 3 */ gnl(1001, NULL);
+	/* 4 */ gnl(fd[1], "01234567890123456789012345678901234567890\n");
 
-	// fd[2] = open("gnlTester/files/43_with_nl", O_RDWR);
-	// /* 5 */ gnl(1002, NULL);
-	// /* 6 */ gnl(fd[2], "012345678901234567890123456789012345678901\n");
+	fd[2] = open("gnlTester/files/43_with_nl", O_RDWR);
+	/* 5 */ gnl(1002, NULL);
+	/* 6 */ gnl(fd[2], "012345678901234567890123456789012345678901\n");
 
-	// /* 7 */ gnl(1003, NULL);
-	// /* 8 */ gnl(fd[0], "0");
+	/* 7 */ gnl(1003, NULL);
+	/* 8 */ gnl(fd[0], "0");
 
-	// /* 9 */ gnl(1004, NULL);
-	// /* 10 */ gnl(fd[1], "1");
+	/* 9 */ gnl(1004, NULL);
+	/* 10 */ gnl(fd[1], "1");
 
-	// /* 11 */ gnl(1005, NULL);
-	// /* 12 */ gnl(fd[2], "2");
+	/* 11 */ gnl(1005, NULL);
+	/* 12 */ gnl(fd[2], "2");
 
-	// /* 13 */ gnl(fd[0], NULL);
-	// /* 14 */ gnl(fd[1], NULL);
-	// /* 15 */ gnl(fd[2], NULL);
+	/* 13 */ gnl(fd[0], NULL);
+	/* 14 */ gnl(fd[1], NULL);
+	/* 15 */ gnl(fd[2], NULL);
 
-	// fd[3] = open("gnlTester/files/nl", O_RDWR);
-	// /* 16 */ gnl(1006, NULL);
-	// /* 17 */ gnl(fd[3], "\n");
-	// /* 18 */ gnl(1007, NULL);
-	// /* 19 */ gnl(fd[3], NULL);
+	fd[3] = open("gnlTester/files/nl", O_RDWR);
+	/* 16 */ gnl(1006, NULL);
+	/* 17 */ gnl(fd[3], "\n");
+	/* 18 */ gnl(1007, NULL);
+	/* 19 */ gnl(fd[3], NULL);
 
-	while ((res = get_next_line(fd)))
-	{
-		printf("%s", res);
-		free(res);
-	}
-	printf("%s", res);
+	// while ((res = get_next_line(fd)))
+	// {
+	// 	printf("%s", res);
+	// 	free(res);
+	// }
+	// printf("%s", res);
 	// res = get_next_line(1000);
 	// printf("1: %s", res);
 	// if (res)
@@ -156,6 +157,6 @@ int		main(int ac, char **av)
 	// printf("12: %s", res);
 	// free(res);
 
-	close(fd);
+	//close(fd);
 	return (0);
 }

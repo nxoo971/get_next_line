@@ -1,115 +1,126 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/23 19:10:05 by ooxn              #+#    #+#             */
+/*   Updated: 2022/09/24 01:03:14 by ooxn             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line_bonus.h"
 
-void	*freetab(char **buffer, int current)
+void	ft_free(char **ptr)
 {
-	if (!buffer)
-		return (buffer);
-	int		count;
-	int		i;
-
-	if (current >= 0 && buffer[current])
+	if (*ptr)
 	{
-		free(buffer[current]);
-		buffer[current] = NULL;
-		buffer[current] = malloc(1);
-		buffer[current][0] = 0;
+		free(*ptr);
+		*ptr = NULL;
 	}
+}
+
+int		ft_isfreeable(char **ptr, int msize)
+{
+	int		i;
+	int		res;
+(void)msize;
 	i = 0;
-	count = 0;
-	while (buffer[i])
+	res = 0;
+	while (ptr[i] != NULL)
 	{
-		if (buffer[i][0] != 0)
-			count++;
+		if (ptr[i][0] != '\0')
+			res++;
 		i++;
 	}
-	if (count == 0)
+	return (res == 0);
+}
+
+void	ft_freetab(char **ptr, int msize)
+{
+	int	i;
+(void)msize;
+	if (!ptr)
+		return ;
+	i = 0;
+	while (ptr[i] != NULL)
 	{
-		i = 0;
-		while (buffer[i])
+		ft_free(ptr + i);
+		i++;
+	}
+	free(ptr);
+}
+
+char	**popmem(char **src, int msize)
+{
+	char	**res;
+	int		i;
+	int		k;
+
+	i = 0;
+	res = malloc(sizeof(char *) * msize);
+	if (res)
+	{
+		k = -1;
+		while (src[++k])
+			res[k] = strdup(src[k]);
+		while (k < msize - 1)
 		{
-			free(buffer[i]);
-			buffer[i] = NULL;
-			i++;
+			res[k] = strdup("");
+			k++;
 		}
-		free(buffer);
-		buffer = NULL;
+		res[k] = NULL;
+	}
+	ft_freetab(src, msize);
+	return (res);
+}
+
+char	**create_buffer(char **buffer, int fd)
+{
+	int		size;
+
+	size = fd;
+	if (fd == 0)
+		size = 2;
+	buffer = malloc(sizeof(char *) * size);
+	if (buffer)
+	{
+		buffer[--size] = 0;
+		while (--size >= 0)
+		{
+			buffer[size] = malloc(1);
+			if (!buffer[size])
+			{
+				ft_freetab(buffer, fd);
+				return (NULL);
+			}
+			buffer[size][0] = '\0';
+		}
 	}
 	return (buffer);
 }
 
-char	**arraydup(char **src, int msize)
+char	**check_line_by_fd(char **buffer, int fd)
 {
-	char	**dst;
-	int		i;
-
-	if (!src)
-		return (src);
-	i = 0;
-	while (src[i])
-		i++;
-	while (i < msize)
-		i++;
-	i++;
-	dst = malloc(sizeof(char *) * (i + 1));
-	if (!dst)
-		return (dst);
-	dst[i] = 0;
-	dst[--i] = malloc(1);
-	dst[i][0] = '\0';
-	i = 0;
-	while (src[i])
-	{
-		dst[i] = strdup(src[i]);
-		i++;
-	}
-	while (i < msize - 1)
-	{
-		dst[i] = strdup("");
-		i++;
-	}
-	return (dst);
-}
-
-char	**get_line_by_fd(int fd, char **buffer)
-{
-	char	**res;
-	int		size;
+	int		pos;
 
 	if (!buffer)
 	{
-		size = fd;
-		if (fd == 0)
-			size = 2;
-		buffer = malloc(sizeof(char *) * size);
-		if (buffer)
-		{
-			buffer[--size] = 0;
-			while (--size >= 0)
-			{
-				buffer[size] = malloc(1);
-				if (!buffer[size])
-					return (freetab(buffer, size));
-				buffer[size][0] = '\0';
-			}
-		}
-		return (buffer);
+		buffer = create_buffer(buffer, fd);
+		if (!buffer)
+			return (NULL);
 	}
-	if (buffer[fd == 0 ? fd : fd - 2])
+	pos = fd;
+	if (fd != 0)
+		pos = fd - 2;
+	if (buffer[pos] != NULL)
 		return (buffer);
-	res = arraydup(buffer, fd);
-	int i = 0;
-			while (buffer[i])
-			{
-				free(buffer[i]);
-				buffer[i] = NULL;
-				i++;
-			}
-			free(buffer);
-			buffer = NULL;
-	return (res);
+	buffer = popmem(buffer, fd);
+	return (buffer);
 }
 
-int		readuntil(int fd, char **bufferline)
+int		readuntil(char **bufferline, int fd)
 {
 	char	buff[BUFFER_SIZE + 1];
 	int		byteread;
@@ -132,66 +143,73 @@ int		readuntil(int fd, char **bufferline)
 
 char	*get_next_line(int fd)
 {
-	static char	**buffer;
-	char		*temp;
-	char		*tmp;
-	char		*endl;
-	int			pos;
+	static char		**buffer;
+	char			*endl;
+	char			*tmp;
+	char			*temp;
+	int				pos;
 
 	if (fd < 3 && fd != 0)
 	{
-		if (buffer)
+		ft_freetab(buffer, fd);
+		buffer = NULL;
+		return (NULL);
+	}
+	buffer = check_line_by_fd(buffer, fd);
+	pos = (!fd ? fd : fd - 2);
+	if (!buffer || !buffer[pos])
+	{
+		if (ft_isfreeable(buffer, fd))
 		{
-			int i = 0;
-			while (buffer[i])
-			{
-				free(buffer[i]);
-				buffer[i] = NULL;
-				i++;
-			}
-			free(buffer);
+			ft_freetab(buffer, fd);
 			buffer = NULL;
 		}
 		return (NULL);
 	}
-	buffer = get_line_by_fd(fd, buffer);
-	pos = (fd == 0 ? fd : fd - 2);
-	if (!buffer || !buffer[pos])
+	if (!readuntil(buffer + pos, fd))
 	{
-		buffer = freetab(buffer, pos);
-		return (NULL);
-	}
-	if (!buffer[pos][0]) // pour strjoin dans readuntil
-	{
-		free(buffer[pos]); // free le malloc(1)
-		buffer[pos] = NULL;
-	}
-	if (!readuntil(fd, buffer + pos))
-	{
-		buffer = freetab(buffer, pos);
+		if (ft_isfreeable(buffer, fd))
+		{
+			ft_freetab(buffer, fd);
+			buffer = NULL;
+			return (NULL);
+		}
+		/*if (buffer[pos] != NULL)
+			ft_free(buffer + pos);*/
+		buffer[pos] = strdup("");
 		return (NULL);
 	}
 	if (!buffer[pos])
 	{
-		buffer[pos] = malloc(1);
-		buffer[pos][0] = 0;
-		buffer = freetab(buffer, pos);
+		if (ft_isfreeable(buffer, fd))
+		{
+			ft_freetab(buffer, fd);
+			buffer = NULL;
+		}
 		return (NULL);
 	}
 	endl = strchr(buffer[pos], '\n');
 	if (!endl)
 	{
 		tmp = NULL;
-		if (buffer[pos][0])
+		if (buffer[pos][0]) // si il y a quand même qqchose, tout free et return la line
 			tmp = strdup(buffer[pos]);
-		buffer = freetab(buffer, pos);
+		if (ft_isfreeable(buffer, fd))
+		{
+			ft_freetab(buffer, fd);
+			buffer = NULL;
+			return (NULL);
+		}
+		if (buffer[pos])
+			ft_free(buffer + pos);
+		buffer[pos] = strdup("");
 		return (tmp);
 	}
 	temp = strndup(buffer[pos], endl - buffer[pos] + 1);
 	if (temp)
 	{
 		tmp = strdup(endl + 1);
-		free(buffer[pos]);
+		ft_free(buffer + pos);
 		buffer[pos] = tmp;
 	}
 	return (temp);
