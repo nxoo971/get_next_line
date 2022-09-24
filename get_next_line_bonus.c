@@ -6,7 +6,7 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 19:10:05 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/24 23:07:54 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/24 23:12:43 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,12 +99,9 @@ char	*next_line(char ***buffer, int pos)
 		return (tmp);
 	}
 	temp = strndup((*buffer)[pos], endl - (*buffer)[pos] + 1);
-	if (temp)
-	{
-		tmp = strdup(endl + 1);
-		free((*buffer)[pos]);
-		(*buffer)[pos] = tmp;
-	}
+	tmp = strdup(endl + 1);
+	free((*buffer)[pos]);
+	(*buffer)[pos] = tmp;
 	return (temp);
 }
 
@@ -119,7 +116,9 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	buffer = check_line_by_fd(buffer, fd);
-	pos = (!fd ? fd : fd - 2);
+	pos = fd;
+	if (fd != 0)
+		pos = fd - 2;
 	if (!buffer || !buffer[pos])
 	{
 		ft_freetab(&buffer, 0);
