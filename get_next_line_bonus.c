@@ -6,50 +6,37 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 19:10:05 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/24 01:03:14 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/24 21:28:47 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-void	ft_free(char **ptr)
-{
-	if (*ptr)
-	{
-		free(*ptr);
-		*ptr = NULL;
-	}
-}
-
-int		ft_isfreeable(char **ptr, int msize)
+void	ft_freetab(char ***ptr, int force)
 {
 	int		i;
 	int		res;
-(void)msize;
-	i = 0;
-	res = 0;
-	while (ptr[i] != NULL)
-	{
-		if (ptr[i][0] != '\0')
-			res++;
-		i++;
-	}
-	return (res == 0);
-}
 
-void	ft_freetab(char **ptr, int msize)
-{
-	int	i;
-(void)msize;
-	if (!ptr)
+	if (!*ptr)
 		return ;
-	i = 0;
-	while (ptr[i] != NULL)
+	i = -1;
+	res = 0;
+	while (!force && (*ptr)[++i] != NULL)
 	{
-		ft_free(ptr + i);
-		i++;
+		if ((*ptr)[i][0] != '\0')
+			res++;
 	}
-	free(ptr);
+	if (res == 0)
+	{
+		i = -1;
+		while ((*ptr)[++i] != NULL)
+		{
+			free((*ptr)[i]);
+			(*ptr)[i] = NULL;
+		}
+		free(*ptr);
+		*ptr = NULL;
+	}
 }
 
 char	**popmem(char **src, int msize)
@@ -72,7 +59,7 @@ char	**popmem(char **src, int msize)
 		}
 		res[k] = NULL;
 	}
-	ft_freetab(src, msize);
+	ft_freetab(&src, 1);
 	return (res);
 }
 
@@ -92,7 +79,7 @@ char	**create_buffer(char **buffer, int fd)
 			buffer[size] = malloc(1);
 			if (!buffer[size])
 			{
-				ft_freetab(buffer, fd);
+				ft_freetab(&buffer, 1);
 				return (NULL);
 			}
 			buffer[size][0] = '\0';
@@ -120,7 +107,7 @@ char	**check_line_by_fd(char **buffer, int fd)
 	return (buffer);
 }
 
-int		readuntil(char **bufferline, int fd)
+int	readuntil(char **bufferline, int fd)
 {
 	char	buff[BUFFER_SIZE + 1];
 	int		byteread;
@@ -135,7 +122,7 @@ int		readuntil(char **bufferline, int fd)
 		if (byteread == 0)
 			break ;
 		ft_strjoin(bufferline, buff, byteread);
-		if (strchr(buff, '\n'))
+		if (ft_strchr(buff, '\n'))
 			break ;
 	}
 	return (1);
@@ -144,73 +131,26 @@ int		readuntil(char **bufferline, int fd)
 char	*get_next_line(int fd)
 {
 	static char		**buffer;
-	char			*endl;
-	char			*tmp;
-	char			*temp;
 	int				pos;
 
 	if (fd < 3 && fd != 0)
 	{
-		ft_freetab(buffer, fd);
-		buffer = NULL;
+		ft_freetab(&buffer, 1);
 		return (NULL);
 	}
 	buffer = check_line_by_fd(buffer, fd);
 	pos = (!fd ? fd : fd - 2);
 	if (!buffer || !buffer[pos])
 	{
-		if (ft_isfreeable(buffer, fd))
-		{
-			ft_freetab(buffer, fd);
-			buffer = NULL;
-		}
+		ft_freetab(&buffer, 0);
 		return (NULL);
 	}
 	if (!readuntil(buffer + pos, fd))
 	{
-		if (ft_isfreeable(buffer, fd))
-		{
-			ft_freetab(buffer, fd);
-			buffer = NULL;
-			return (NULL);
-		}
-		/*if (buffer[pos] != NULL)
-			ft_free(buffer + pos);*/
-		buffer[pos] = strdup("");
+		ft_freetab(&buffer, 0);
+		if (buffer && buffer[pos])
+			buffer[pos] = strdup("");
 		return (NULL);
 	}
-	if (!buffer[pos])
-	{
-		if (ft_isfreeable(buffer, fd))
-		{
-			ft_freetab(buffer, fd);
-			buffer = NULL;
-		}
-		return (NULL);
-	}
-	endl = strchr(buffer[pos], '\n');
-	if (!endl)
-	{
-		tmp = NULL;
-		if (buffer[pos][0]) // si il y a quand même qqchose, tout free et return la line
-			tmp = strdup(buffer[pos]);
-		if (ft_isfreeable(buffer, fd))
-		{
-			ft_freetab(buffer, fd);
-			buffer = NULL;
-			return (NULL);
-		}
-		if (buffer[pos])
-			ft_free(buffer + pos);
-		buffer[pos] = strdup("");
-		return (tmp);
-	}
-	temp = strndup(buffer[pos], endl - buffer[pos] + 1);
-	if (temp)
-	{
-		tmp = strdup(endl + 1);
-		ft_free(buffer + pos);
-		buffer[pos] = tmp;
-	}
-	return (temp);
+	return (next_line(&buffer, pos));
 }

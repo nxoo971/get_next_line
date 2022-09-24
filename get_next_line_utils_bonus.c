@@ -6,7 +6,7 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:20 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/24 00:43:55 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/24 21:29:16 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,13 @@ void	ft_strjoin(char **line, const char *s1, int size)
 			*res = 0;
 			ft_strcat(res, *line);
 			ft_strcat(res, s1);
-			ft_free(line);
+			free(*line);
 			*line = res;
 		}
 		return ;
 	}
 	if (*line && !**line)
-		ft_free(line);
+		free(*line);
 	*line = malloc(size + 1);
 	if (*line)
 	{
@@ -74,4 +74,34 @@ const char	*ft_strchr(const char *s, int c)
 	if (*s == ch)
 		return (s);
 	return (NULL);
+}
+
+char	*next_line(char ***buffer, int pos)
+{
+	const char		*endl;
+	char			*tmp;
+	char			*temp;
+
+	endl = ft_strchr((*buffer)[pos], '\n');
+	if (!endl)
+	{
+		tmp = NULL;
+		if ((*buffer)[pos][0])
+			tmp = strdup((*buffer)[pos]);
+		ft_freetab(buffer, 0);
+		if (*buffer && (*buffer)[pos])
+		{
+			free((*buffer)[pos]);
+			(*buffer)[pos] = strdup("");
+		}
+		return (tmp);
+	}
+	temp = strndup((*buffer)[pos], endl - (*buffer)[pos] + 1);
+	if (temp)
+	{
+		tmp = strdup(endl + 1);
+		free((*buffer)[pos]);
+		(*buffer)[pos] = tmp;
+	}
+	return (temp);
 }
