@@ -6,21 +6,18 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:20 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/24 23:04:49 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/25 00:09:41 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-const char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(const char *s, int c)
 {
-	char	ch;
-
-	ch = (char)c;
-	while (*s && *s != ch)
+	while (*s && *s != (char)c)
 		s++;
-	if (*s == ch)
-		return (s);
+	if ((char)*s == (char)c)
+		return ((char *)s);
 	return (NULL);
 }
 
@@ -33,6 +30,29 @@ char	*ft_strcpy(char *dst, const char *src)
 		*start++ = *src++;
 	*start = 0;
 	return (dst);
+}
+
+char	*ft_strdupcpy(char *d1, char *s1, char *s2, int n)
+{
+	char	*start;
+	char	*res;
+	int		i;
+
+	if (!s2)
+	{
+		start = d1;
+		while (*s1)
+			*start++ = *s1++;
+		*start = 0;
+		return (d1);
+	}
+	i = 0;
+	while (s2[i])
+		i++;
+	if (n != -1)
+		i = n - 1;
+	res = malloc(i + 1);
+	return (ft_strdupcpy(res, s2, NULL, 0));
 }
 
 void	ft_freetab(char ***ptr, int force)
@@ -75,8 +95,8 @@ void	ft_strjoin(char **line, const char *s1, int size)
 		res = malloc(size + i + 1);
 		if (res)
 		{
-			ft_strcpy(res, *line);
-			ft_strcpy(res + i, s1);
+			ft_strdupcpy(res, *line, NULL, 0);
+			ft_strdupcpy(res + i, (char *)s1, NULL, 0);
 			free(*line);
 			*line = res;
 		}
@@ -86,7 +106,7 @@ void	ft_strjoin(char **line, const char *s1, int size)
 		free(*line);
 	*line = malloc(size + 1);
 	if (*line)
-		ft_strcpy(*line, s1);
+		ft_strdupcpy(*line, (char *)s1, NULL, -1);
 }
 
 int	readuntil(char **bufferline, int fd)

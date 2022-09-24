@@ -6,7 +6,7 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 19:10:05 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/24 23:12:43 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/25 00:08:19 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,9 @@ char	**check_line_by_fd(char **buffer, int fd)
 
 char	*next_line(char ***buffer, int pos)
 {
-	const char		*endl;
-	char			*tmp;
-	char			*temp;
+	char	*endl;
+	char	*tmp;
+	char	*temp;
 
 	endl = ft_strchr((*buffer)[pos], '\n');
 	if (!endl)
@@ -98,6 +98,7 @@ char	*next_line(char ***buffer, int pos)
 		}
 		return (tmp);
 	}
+	//temp = ft_strdupcpy(NULL, NULL, (*buffer)[pos], endl - (*buffer)[pos] + 1);
 	temp = strndup((*buffer)[pos], endl - (*buffer)[pos] + 1);
 	tmp = strdup(endl + 1);
 	free((*buffer)[pos]);
@@ -128,7 +129,7 @@ char	*get_next_line(int fd)
 	{
 		ft_freetab(&buffer, 0);
 		if (buffer && buffer[pos])
-			buffer[pos] = strdup("");
+			buffer[pos] = ft_strdupcpy(NULL, NULL, "", -1);
 		return (NULL);
 	}
 	return (next_line(&buffer, pos));
