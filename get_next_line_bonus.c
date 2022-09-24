@@ -6,62 +6,11 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 19:10:05 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/24 21:28:47 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/24 23:07:54 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-
-void	ft_freetab(char ***ptr, int force)
-{
-	int		i;
-	int		res;
-
-	if (!*ptr)
-		return ;
-	i = -1;
-	res = 0;
-	while (!force && (*ptr)[++i] != NULL)
-	{
-		if ((*ptr)[i][0] != '\0')
-			res++;
-	}
-	if (res == 0)
-	{
-		i = -1;
-		while ((*ptr)[++i] != NULL)
-		{
-			free((*ptr)[i]);
-			(*ptr)[i] = NULL;
-		}
-		free(*ptr);
-		*ptr = NULL;
-	}
-}
-
-char	**popmem(char **src, int msize)
-{
-	char	**res;
-	int		i;
-	int		k;
-
-	i = 0;
-	res = malloc(sizeof(char *) * msize);
-	if (res)
-	{
-		k = -1;
-		while (src[++k])
-			res[k] = strdup(src[k]);
-		while (k < msize - 1)
-		{
-			res[k] = strdup("");
-			k++;
-		}
-		res[k] = NULL;
-	}
-	ft_freetab(&src, 1);
-	return (res);
-}
 
 char	**create_buffer(char **buffer, int fd)
 {
@@ -88,6 +37,28 @@ char	**create_buffer(char **buffer, int fd)
 	return (buffer);
 }
 
+char	**pop_mem(char **src, int msize)
+{
+	char	**res;
+	int		k;
+
+	res = malloc(sizeof(char *) * msize);
+	if (res)
+	{
+		k = -1;
+		while (src[++k])
+			res[k] = strdup(src[k]);
+		while (k < msize - 1)
+		{
+			res[k] = strdup("");
+			k++;
+		}
+		res[k] = NULL;
+	}
+	ft_freetab(&src, 1);
+	return (res);
+}
+
 char	**check_line_by_fd(char **buffer, int fd)
 {
 	int		pos;
@@ -103,29 +74,38 @@ char	**check_line_by_fd(char **buffer, int fd)
 		pos = fd - 2;
 	if (buffer[pos] != NULL)
 		return (buffer);
-	buffer = popmem(buffer, fd);
+	buffer = pop_mem(buffer, fd);
 	return (buffer);
 }
 
-int	readuntil(char **bufferline, int fd)
+char	*next_line(char ***buffer, int pos)
 {
-	char	buff[BUFFER_SIZE + 1];
-	int		byteread;
+	const char		*endl;
+	char			*tmp;
+	char			*temp;
 
-	byteread = 1;
-	while (byteread)
+	endl = ft_strchr((*buffer)[pos], '\n');
+	if (!endl)
 	{
-		byteread = read(fd, buff, BUFFER_SIZE);
-		if (byteread < 0)
-			return (0);
-		buff[byteread] = 0;
-		if (byteread == 0)
-			break ;
-		ft_strjoin(bufferline, buff, byteread);
-		if (ft_strchr(buff, '\n'))
-			break ;
+		tmp = NULL;
+		if ((*buffer)[pos][0])
+			tmp = strdup((*buffer)[pos]);
+		ft_freetab(buffer, 0);
+		if (*buffer && (*buffer)[pos])
+		{
+			free((*buffer)[pos]);
+			(*buffer)[pos] = strdup("");
+		}
+		return (tmp);
 	}
-	return (1);
+	temp = strndup((*buffer)[pos], endl - (*buffer)[pos] + 1);
+	if (temp)
+	{
+		tmp = strdup(endl + 1);
+		free((*buffer)[pos]);
+		(*buffer)[pos] = tmp;
+	}
+	return (temp);
 }
 
 char	*get_next_line(int fd)
