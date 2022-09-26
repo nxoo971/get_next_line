@@ -6,7 +6,7 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 19:10:05 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/25 00:08:19 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/25 21:54:23 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char	**pop_mem(char **src, int msize)
 			res[k] = strdup(src[k]);
 		while (k < msize - 1)
 		{
-			res[k] = strdup("");
+			res[k] = ft_strdupcpy(NULL, NULL, "", -1);
 			k++;
 		}
 		res[k] = NULL;
@@ -94,11 +94,10 @@ char	*next_line(char ***buffer, int pos)
 		if (*buffer && (*buffer)[pos])
 		{
 			free((*buffer)[pos]);
-			(*buffer)[pos] = strdup("");
+			(*buffer)[pos] = ft_strdupcpy(NULL, NULL, "", -1);
 		}
 		return (tmp);
 	}
-	//temp = ft_strdupcpy(NULL, NULL, (*buffer)[pos], endl - (*buffer)[pos] + 1);
 	temp = strndup((*buffer)[pos], endl - (*buffer)[pos] + 1);
 	tmp = strdup(endl + 1);
 	free((*buffer)[pos]);
@@ -130,6 +129,11 @@ char	*get_next_line(int fd)
 		ft_freetab(&buffer, 0);
 		if (buffer && buffer[pos])
 			buffer[pos] = ft_strdupcpy(NULL, NULL, "", -1);
+		return (NULL);
+	}
+	if (!buffer[pos])
+	{
+		ft_freetab(&buffer, 0);
 		return (NULL);
 	}
 	return (next_line(&buffer, pos));

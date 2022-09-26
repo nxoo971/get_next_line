@@ -6,7 +6,7 @@
 /*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:20 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/25 00:09:41 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/25 21:53:22 by ooxn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,25 +34,48 @@ char	*ft_strcpy(char *dst, const char *src)
 
 char	*ft_strdupcpy(char *d1, char *s1, char *s2, int n)
 {
-	char	*start;
 	char	*res;
 	int		i;
 
 	if (!s2)
 	{
-		start = d1;
-		while (*s1)
-			*start++ = *s1++;
-		*start = 0;
+		i = 0;
+		if (n != -1)
+		{
+			while (i < n && s1[i])
+			{
+				d1[i] = s1[i];
+				i++;
+			}
+		}
+		else
+		{
+			while (s1[i])
+			{
+				d1[i] = s1[i];
+				i++;
+			}
+		}
+		d1[i] = 0;
 		return (d1);
 	}
-	i = 0;
-	while (s2[i])
-		i++;
-	if (n != -1)
-		i = n - 1;
+	if (n == -1)
+	{
+		i = 0;
+		while (s2[i])
+			i++;
+		res = malloc(i + 1);
+		res[i] = 0;
+		while (--i >= 0 || s2[i])
+			res[i] = s2[i];
+		return (res);
+	}
+	i = n;
 	res = malloc(i + 1);
-	return (ft_strdupcpy(res, s2, NULL, 0));
+	res[i] = 0;
+	while (--i >= 0 && s2[i])
+		res[i] = s2[i];
+	return (res);
 }
 
 void	ft_freetab(char ***ptr, int force)
@@ -95,8 +118,10 @@ void	ft_strjoin(char **line, const char *s1, int size)
 		res = malloc(size + i + 1);
 		if (res)
 		{
-			ft_strdupcpy(res, *line, NULL, 0);
-			ft_strdupcpy(res + i, (char *)s1, NULL, 0);
+			//ft_strdupcpy(res, *line, NULL, -1);
+			//ft_strdupcpy(res + i, (char *)s1, NULL, -1);
+			ft_strcpy(res, *line);
+			ft_strcpy(res + i, s1);
 			free(*line);
 			*line = res;
 		}
@@ -104,9 +129,7 @@ void	ft_strjoin(char **line, const char *s1, int size)
 	}
 	if (*line && !**line)
 		free(*line);
-	*line = malloc(size + 1);
-	if (*line)
-		ft_strdupcpy(*line, (char *)s1, NULL, -1);
+	*line = strdup(s1);
 }
 
 int	readuntil(char **bufferline, int fd)
