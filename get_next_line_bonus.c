@@ -6,7 +6,7 @@
 /*   By: nxoo <nxoo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 19:10:05 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/28 00:32:13 by nxoo             ###   ########.fr       */
+/*   Updated: 2022/09/28 01:15:55 by nxoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,12 +119,7 @@ char	*get_next_line(int fd)
 	pos = fd;
 	if (fd != 0)
 		pos = fd - 2;
-	if (!buffer || !buffer[pos])
-	{
-		ft_freetab(&buffer, 0);
-		return (NULL);
-	}
-	if (!readuntil(buffer + pos, fd))
+	if (!buffer || !buffer[pos] || !readuntil(buffer + pos, fd))
 	{
 		ft_freetab(&buffer, 0);
 		return (NULL);
