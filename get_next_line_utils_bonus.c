@@ -6,7 +6,7 @@
 /*   By: nxoo <nxoo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:20 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/28 00:31:29 by nxoo             ###   ########.fr       */
+/*   Updated: 2022/09/28 00:54:16 by nxoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,45 +26,25 @@ char	*ft_strdupcpy(char *d1, char *s1, char *s2, int n)
 	char	*res;
 	int		i;
 
+	i = -1;
 	if (!s2)
 	{
-		i = 0;
-		if (n != -1)
-		{
-			while (i < n && s1[i])
-			{
-				d1[i] = s1[i];
-				i++;
-			}
-		}
-		else
-		{
-			while (s1[i])
-			{
-				d1[i] = s1[i];
-				i++;
-			}
-		}
+		while ((++i < n && n != -1 && s1[i]) || (s1[i] && n == -1))
+			d1[i] = s1[i];
 		d1[i] = 0;
 		return (d1);
 	}
-	if (n == -1)
+	if (n != -1)
+		res = malloc(n + 1);
+	else
 	{
-		i = 0;
-		while (s2[i])
-			i++;
+		while (s2[++i])
+			;
 		res = malloc(i + 1);
-		res[i] = 0;
-		while (--i >= 0)
-			res[i] = s2[i];
-		return (res);
 	}
-	i = n;
-	res = malloc(i + 1);
-	res[i] = 0;
-	while (--i >= 0 && s2[i])
-		res[i] = s2[i];
-	return (res);
+	if (n == -1)
+		return (ft_strdupcpy(res, s2, NULL, i));
+	return (ft_strdupcpy(res, s2, NULL, n));
 }
 
 void	ft_freetab(char ***ptr, int force)
