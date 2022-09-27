@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nxoo <nxoo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 23:23:20 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/25 21:53:22 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/28 00:31:29 by nxoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,6 @@ char	*ft_strchr(const char *s, int c)
 	if ((char)*s == (char)c)
 		return ((char *)s);
 	return (NULL);
-}
-
-char	*ft_strcpy(char *dst, const char *src)
-{
-	char	*start;
-
-	start = dst;
-	while (*src)
-		*start++ = *src++;
-	*start = 0;
-	return (dst);
 }
 
 char	*ft_strdupcpy(char *d1, char *s1, char *s2, int n)
@@ -66,7 +55,7 @@ char	*ft_strdupcpy(char *d1, char *s1, char *s2, int n)
 			i++;
 		res = malloc(i + 1);
 		res[i] = 0;
-		while (--i >= 0 || s2[i])
+		while (--i >= 0)
 			res[i] = s2[i];
 		return (res);
 	}
@@ -118,10 +107,8 @@ void	ft_strjoin(char **line, const char *s1, int size)
 		res = malloc(size + i + 1);
 		if (res)
 		{
-			//ft_strdupcpy(res, *line, NULL, -1);
-			//ft_strdupcpy(res + i, (char *)s1, NULL, -1);
-			ft_strcpy(res, *line);
-			ft_strcpy(res + i, s1);
+			ft_strdupcpy(res, *line, NULL, -1);
+			ft_strdupcpy(res + i, (char *)s1, NULL, -1);
 			free(*line);
 			*line = res;
 		}
@@ -129,7 +116,7 @@ void	ft_strjoin(char **line, const char *s1, int size)
 	}
 	if (*line && !**line)
 		free(*line);
-	*line = strdup(s1);
+	*line = ft_strdupcpy(NULL, NULL, (char *)s1, -1);
 }
 
 int	readuntil(char **bufferline, int fd)

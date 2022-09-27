@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ooxn <ooxn@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nxoo <nxoo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 19:10:05 by ooxn              #+#    #+#             */
-/*   Updated: 2022/09/25 21:54:23 by ooxn             ###   ########.fr       */
+/*   Updated: 2022/09/28 00:32:13 by nxoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ char	**pop_mem(char **src, int msize)
 	{
 		k = -1;
 		while (src[++k])
-			res[k] = strdup(src[k]);
+			res[k] = ft_strdupcpy(NULL, NULL, src[k], -1);
 		while (k < msize - 1)
 		{
 			res[k] = ft_strdupcpy(NULL, NULL, "", -1);
@@ -89,7 +89,7 @@ char	*next_line(char ***buffer, int pos)
 	{
 		tmp = NULL;
 		if ((*buffer)[pos][0])
-			tmp = strdup((*buffer)[pos]);
+			tmp = ft_strdupcpy(NULL, NULL, (*buffer)[pos], -1);
 		ft_freetab(buffer, 0);
 		if (*buffer && (*buffer)[pos])
 		{
@@ -98,8 +98,8 @@ char	*next_line(char ***buffer, int pos)
 		}
 		return (tmp);
 	}
-	temp = strndup((*buffer)[pos], endl - (*buffer)[pos] + 1);
-	tmp = strdup(endl + 1);
+	temp = ft_strdupcpy(NULL, NULL, (*buffer)[pos], endl - (*buffer)[pos] + 1);
+	tmp = ft_strdupcpy(NULL, NULL, endl + 1, -1);
 	free((*buffer)[pos]);
 	(*buffer)[pos] = tmp;
 	return (temp);
@@ -125,13 +125,6 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	if (!readuntil(buffer + pos, fd))
-	{
-		ft_freetab(&buffer, 0);
-		if (buffer && buffer[pos])
-			buffer[pos] = ft_strdupcpy(NULL, NULL, "", -1);
-		return (NULL);
-	}
-	if (!buffer[pos])
 	{
 		ft_freetab(&buffer, 0);
 		return (NULL);
